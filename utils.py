@@ -17,7 +17,6 @@ def fix_marks(schoolkid):
     Mark.objects.filter(schoolkid=schoolkid, points__lte=3).update(points=5)
 
 
-
 def remove_chastisements(schoolkid):
     Chastisement.objects.filter(schoolkid=schoolkid).delete()
 
