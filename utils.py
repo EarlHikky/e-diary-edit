@@ -14,10 +14,8 @@ def get_schoolkid(name):
 
 
 def fix_marks(schoolkid):
-    bad_marks = Mark.objects.filter(schoolkid=schoolkid, points__lte=3)
-    for mark in bad_marks:
-        mark.points = random.choice((4, 5))
-        mark.save()
+    Mark.objects.filter(schoolkid=schoolkid, points__lte=3).update(points=5)
+
 
 
 def remove_chastisements(schoolkid):
