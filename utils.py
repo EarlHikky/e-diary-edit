@@ -5,7 +5,12 @@ from datacenter.models import Mark, Chastisement, Schoolkid, Lesson, Subject, Te
 
 
 def get_schoolkid(name):
-    return Schoolkid.objects.get(full_name__contains=name)
+    try:
+        return Schoolkid.objects.get(full_name__contains=name)
+    except ObjectDoesNotExist:
+        print(f'Неверно введено имя: "{name}" нет в базе данных.')
+    except MultipleObjectsReturned:
+        print('Неверно введено имя: найдено несколько человек. Уточните запрос.')
 
 
 def fix_marks(schoolkid):
@@ -33,7 +38,10 @@ def get_commendation_text():
 
 
 def get_subject(title, year_of_study):
-    return Subject.objects.get(title=title, year_of_study=year_of_study)
+    try:
+        return Subject.objects.get(title=title, year_of_study=year_of_study)
+    except ObjectDoesNotExist:
+        print(f'Неверно введено название предмета: "{title}" нет в базе данных.')
 
 
 def get_teacher(lesson):
@@ -59,17 +67,11 @@ def main(name, subject_title):
         remove_chastisements(schoolkid)
         year_of_study = schoolkid.year_of_study
         group_letter = schoolkid.group_letter
-        try:
-            subject = get_subject(subject_title, year_of_study)
-            lesson = get_lesson(year_of_study, group_letter, subject)
-            create_commendation(schoolkid, lesson, subject)
-            print('Скрипт завершил работу успешно.')
+        subject = get_subject(subject_title, year_of_study)
+        lesson = get_lesson(year_of_study, group_letter, subject)
+        create_commendation(schoolkid, lesson, subject)
+        print('Скрипт завершил работу успешно.')
+    except AttributeError:
+        print('Возникла проблема при выполнении скрипта.')
 
-        except ObjectDoesNotExist:
-            print(f'Неверно введено название предмета: "{subject_title}" нет в базе данных.')
 
-    except ObjectDoesNotExist:
-        print(f'Неверно введено имя: "{name}" нет в базе данных.')
-
-    except MultipleObjectsReturned:
-        print('Неверно введено имя: найдено несколько человек. Уточните запрос.')
