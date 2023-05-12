@@ -1,16 +1,10 @@
 import random
 
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from datacenter.models import Mark, Chastisement, Schoolkid, Lesson, Subject, Teacher, Commendation
 
 
 def get_schoolkid(name):
-    try:
-        return Schoolkid.objects.get(full_name__contains=name)
-    except ObjectDoesNotExist:
-        print(f'Неверно введено имя: "{name}" нет в базе данных.')
-    except MultipleObjectsReturned:
-        print('Неверно введено имя: найдено несколько человек. Уточните запрос.')
+    return Schoolkid.objects.get(full_name__contains=name)
 
 
 def fix_marks(schoolkid):
@@ -35,10 +29,7 @@ def get_commendation_text():
 
 
 def get_subject(title, year_of_study):
-    try:
-        return Subject.objects.get(title=title, year_of_study=year_of_study)
-    except ObjectDoesNotExist:
-        print(f'Неверно введено название предмета: "{title}" нет в базе данных.')
+    return Subject.objects.get(title=title, year_of_study=year_of_study)
 
 
 def get_teacher(lesson):
@@ -68,7 +59,36 @@ def main(name, subject_title):
         lesson = get_lesson(year_of_study, group_letter, subject)
         create_commendation(schoolkid, lesson, subject)
         print('Скрипт завершил работу успешно.')
-    except AttributeError:
-        print('Возникла проблема при выполнении скрипта.')
 
+    except Schoolkid.DoesNotExist:
+        print(f'Неверно введено имя: "{name}" нет в базе данных.')
+    except Schoolkid.MultipleObjectsReturned:
+        print('Неверно введено имя: найдено несколько человек. Уточните запрос.')
 
+    except Subject.DoesNotExist:
+        print(f'Неверно введено название предмета: "{subject_title}" нет в базе данных.')
+    except Subject.MultipleObjectsReturned:
+        print('Найдено несколько предметов с одинаковым названием.')
+
+    except Teacher.DoesNotExist:
+        print('Учитель не найден в базе данных.')
+    except Teacher.MultipleObjectsReturned:
+        print('Найдено несколько учителей с одинаковым id.')
+
+    except Lesson.DoesNotExist:
+        print('Урок не найден в базе данных.')
+    except Lesson.MultipleObjectsReturned:
+        print('Найдено несколько одинаковых уроков.')
+
+    except Mark.DoesNotExist:
+        print('Не найдено оценок в базе данных.')
+    except Mark.MultipleObjectsReturned:
+        print('Найдено несколько одинаковых оценок.')
+
+    except Chastisement.DoesNotExist:
+        print('Замечание не найдено в базе данных.')
+    except Chastisement.MultipleObjectsReturned:
+        print('Найдено несколько одинаковых замечаний.')
+
+    except FileNotFoundError:
+        print('Не найден файл с рекомендациями.')
